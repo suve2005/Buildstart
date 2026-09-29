@@ -5,9 +5,8 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 
 load_dotenv()
 
-# NEVER commit a real password here. Set DATABASE_URL in .env; this default is a
-# placeholder for local scaffolding, not a real credential.
-DATABASE_URL = os.getenv("DATABASE_URL", "mysql+pymysql://root:SUVEthican2005@localhost:3306/payment_db")
+
+DATABASE_URL = os.getenv("DATABASE_URL", "mysql+pymysql://blah:change_me@localhost:3306/payment_db") # change blah to root and change_me to pw
 
 engine = create_engine(DATABASE_URL, pool_pre_ping=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -36,15 +35,14 @@ class PaymentRecord(Base):
     category = Column(String(30))
     retry_count = Column(Integer, default=0, nullable=False)
 
-    # Set when the bot flow supplies which order this payment is for. When NULL,
-    # validate_payment() falls back to matching by phone number (see that file).
+
     order_id = Column(Integer, ForeignKey("orders.id"), nullable=True, index=True)
 
-    # Cumulative confidence (visual x OCR) and the OCR stage's own score
+    
     confidence_score = Column(Float, default=100.0)
     ocr_confidence = Column(Float)
 
-    # Stage two: extracted data (purged after 12h for abandoned/retryable rows)
+    
     bank_name = Column(String(100))
     account_no = Column(String(50))
     amount = Column(Numeric(12, 2))
@@ -53,8 +51,7 @@ class PaymentRecord(Base):
     payee_name = Column(String(100))
     nic_masked = Column(String(20))  # raw NIC is never stored
 
-    # Unique but nullable: MySQL unique indexes allow multiple NULLs, so payments where
-    # OCR couldn't extract enough fields to fingerprint don't falsely collide with each other.
+  
     transaction_fingerprint = Column(String(64), unique=True, index=True, nullable=True)
 
     created_at = Column(DateTime, server_default=func.now())
@@ -73,7 +70,4 @@ class SMSRecord(Base):
     received_at = Column(DateTime, server_default=func.now())
 
 
-# create_all does not alter existing tables. After this schema change, in dev:
-#   DROP TABLE payments; DROP TABLE sms_messages; DROP TABLE orders;
-# then restart. For anything beyond local dev, switch to Alembic migrations.
 Base.metadata.create_all(bind=engine)
