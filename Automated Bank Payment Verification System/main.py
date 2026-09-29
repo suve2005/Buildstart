@@ -32,8 +32,7 @@ REVIEW_THRESHOLD = 80.0
 EXTRACTED_FIELDS = ("bank_name", "account_no", "amount", "payment_date",
                     "reference_no", "payee_name", "nic_masked")
 
-# Repeated submissions with no matching order are either abuse or a confused customer;
-# after this many within the window, stop implying "we'll look into it" every time.
+
 ABUSE_WINDOW_MINUTES = 60
 ABUSE_THRESHOLD = 5
 NO_ORDER_REASONS = ("no_active_order", "ambiguous_order", "order_not_found")
@@ -91,7 +90,7 @@ def require_dashboard_auth(x_api_key: str = Header(None)):
     or the bank's /sms/ingest webhook, which need their own auth schemes (WhatsApp
     webhook verification, SMS gateway signature) not yet implemented here."""
     if not DASHBOARD_API_KEY:
-        # Fail closed: no key configured means the dashboard is disabled, not open.
+        
         raise HTTPException(status_code=503, detail="Dashboard auth is not configured")
     if x_api_key != DASHBOARD_API_KEY:
         raise HTTPException(status_code=401, detail="Invalid or missing API key")
@@ -108,7 +107,7 @@ def send_whatsapp_message(phone_number: str, text_body: str):
     """Synchronous POST to the Meta Graph API (runs as a background task)."""
     if not WHATSAPP_TOKEN or not WHATSAPP_PHONE_ID:
         return
-    # Check Meta's docs for the current Graph API version
+    
     url = f"https://graph.facebook.com/v17.0/{WHATSAPP_PHONE_ID}/messages"
     headers = {"Authorization": f"Bearer {WHATSAPP_TOKEN}", "Content-Type": "application/json"}
     payload = {"messaging_product": "whatsapp", "to": phone_number,
@@ -160,7 +159,7 @@ def save_and_respond(db, background_tasks, phone_number, image_hash, status, rea
     db.add(record)
     try:
         db.commit()
-    except IntegrityError:  # simultaneous duplicate slipped past the earlier check
+    except IntegrityError:  
         db.rollback()
         background_tasks.add_task(send_whatsapp_message, phone_number, MSG_DUPLICATE)
         return {"status": "rejected", "reason": "duplicate_slip"}
@@ -306,7 +305,7 @@ def submit_manual_decision(image_hash: str, decision: DecisionIn,
     return {"status": record.status, "hash": image_hash}
 
 
-# --- Dashboard GET endpoints (all require the dashboard API key) ---
+# Dashboard GET endpoints (all require the dashboard API key)
 
 @app.get("/api/v1/payments", response_model=list[PaymentOut], dependencies=[Depends(require_dashboard_auth)])
 def get_payments(status: str = Query(None), limit: int = Query(100, le=500),
