@@ -58,7 +58,7 @@ class StatsOut(BaseModel):
 
 
 class DecisionIn(BaseModel):
-    decision: str  # "APPROVED" or "REJECTED"
+    decision: str 
     note: Optional[str] = None
 
 
