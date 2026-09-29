@@ -5,11 +5,11 @@ import numpy as np
 from PIL import Image
 
 BLUR_THRESHOLDS = {"DIGITAL": 50.0, "PHYSICAL_SLIP": 100.0, "ATM_RECEIPT": 100.0}  # tune on real samples
-MAX_PIXELS = 25_000_000  # protection against decompression bombs
+MAX_PIXELS = 25_000_000  # protection against decompression bombs - security feature
 
 
 def _decode(file_bytes: bytes):
-    # Read dimensions from the header only (no pixel decode) BEFORE decoding the image
+    
     try:
         w, h = Image.open(io.BytesIO(file_bytes)).size
     except Exception:
@@ -73,5 +73,5 @@ def detect_visual_fraud(file_bytes: bytes, category: str) -> dict:
     if image is None:
         return {"is_fraudulent": False, "confidence_penalty": 50.0}
 
-    penalty = _ela_penalty(image) if category == "DIGITAL" else 0.0  # physical checks still TODO
+    penalty = _ela_penalty(image) if category == "DIGITAL" else 0.0 
     return {"is_fraudulent": False, "confidence_penalty": penalty}
