@@ -64,7 +64,7 @@ def _normalize_reference(ref):
     cleaned = re.sub(r"[^A-Za-z0-9]", "", str(ref)).upper()
     return cleaned or None
 
-
+# fake
 def _run_ocr(file_bytes: bytes, category: str):
     """
     MOCK: replace with a real OCR engine (AWS Textract, Google Vision, ...).
