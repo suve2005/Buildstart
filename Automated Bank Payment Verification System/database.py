@@ -7,7 +7,7 @@ load_dotenv()
 
 # NEVER commit a real password here. Set DATABASE_URL in .env; this default is a
 # placeholder for local scaffolding, not a real credential.
-DATABASE_URL = os.getenv("DATABASE_URL", "mysql+pymysql://payment_app:changeme@localhost:3306/payment_db")
+DATABASE_URL = os.getenv("DATABASE_URL", "mysql+pymysql://root:SUVEthican2005@localhost:3306/payment_db")
 
 engine = create_engine(DATABASE_URL, pool_pre_ping=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
