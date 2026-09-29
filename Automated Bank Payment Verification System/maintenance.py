@@ -1,11 +1,11 @@
 from sqlalchemy import text
 from database import SessionLocal
 
-SMS_TOLERANCE_MINUTES = 30  # how long we wait for a matching bank SMS before escalating
+SMS_TOLERANCE_MINUTES = 30  # how long we wait for a matching bank SMS before escalating -random val
 
 # Clears extracted data only. Rows, hashes, statuses and fraud history are kept, so
 # duplicate detection and the audit trail survive. AWAITING_SMS / NEEDS_VERIFICATION /
-# ADVANCED_CHECKING and final decisions are never touched.
+
 PURGE_SQL = text("""
     UPDATE payments
     SET bank_name = NULL, account_no = NULL, amount = NULL, payment_date = NULL,
